@@ -20,10 +20,11 @@ class Employee:
     def getEmpId(self):
         return self.__empId;
 
-    def createUserStory(self, userStoryId, numberOfStoryPoints, storyStatus):
+    def createUserStory(self, featureId, userStoryId, numberOfStoryPoints, storyStatus):
         userStory = UserStory([], numberOfStoryPoints, storyStatus, self)
         self.__listOfUserStories.append(userStory)
         self.__mapOfUserStory[userStoryId] = userStory
+        ProjectTeamLead.getMapOfFeatureIdAndListOfUserStories()[featureId].append(userStory)
 
     def createTask(self, taskName="", expectedHoursToFinishTheTask=0,
                    taskStatus="NotStarted", userStoryId: int = 0):
@@ -51,6 +52,7 @@ This is a ProjectTeamLead Class derived from Employee class. in this class,
 
 
 class ProjectTeamLead(Employee):
+    __mapOfFeatureIdAndListOfUserStoriesUnderIt = dict()
     """
     This is a ProjectTeamLead class that is derived from the Employee base class.
     In this class i maintain the list of employees under a Project Team Lead
@@ -79,6 +81,12 @@ class ProjectTeamLead(Employee):
 
     def getProjectTeamLeadId(self):
         return self.getEmpId()
+
+    def createFeature(self, featureId: int = 0, featureSize: str = "XXL"):
+        self.__projectAssigned.getListOfFeatures().append(Feature(featureId, [], self, featureSize))
+
+    def getMapOfFeatureIdAndListOfUserStories(self):
+        return self.__mapOfFeatureIdAndListOfUserStoriesUnderIt;
 
 
 class Manager(Employee):
@@ -152,10 +160,24 @@ class UserStory:
 
 
 class Feature:
-    def __init__(self, listOfUserStories: list[UserStory] = [], featureOwner: Employee = None, featureSize='XXL'):
+    def __init__(self, featureId: int = 0, listOfUserStories: list[UserStory] = [], featureOwner: Employee = None,
+                 featureSize='XXL'):
+        self.__featureId = featureId
         self.__listOfUserStories = listOfUserStories
         self.__featureOwner = featureOwner
         self.__featureSize = featureSize
+
+    def getListOfUserStories(self):
+        return self.__listOfUserStories
+
+    def getFeatureId(self):
+        return self.__featureId
+
+    def getFeatureOwner(self):
+        return self.__featureOwner
+
+    def getFeatureSize(self):
+        return self.__featureSize
 
 
 class Sprint:
@@ -186,6 +208,9 @@ class Project:
 
     def getProjectId(self):
         return self.__projectId
+
+    def getListOfFeatures(self):
+        return self.__listOfFeatures
 
 
 class Organization:
